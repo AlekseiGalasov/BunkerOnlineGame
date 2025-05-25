@@ -1,4 +1,5 @@
 import React from 'react';
+import LobbyManager from "@/components/lobby/LobbyManager";
 
 const LobbyPage = async ({params}: { params: Promise<{ lobbyId: string }>}) => {
 
@@ -7,6 +8,7 @@ const LobbyPage = async ({params}: { params: Promise<{ lobbyId: string }>}) => {
     return (
         <div>
             LobbyId: {lobbyId}
+            <LobbyManager lobbyId={lobbyId} />
         </div>
     );
 };

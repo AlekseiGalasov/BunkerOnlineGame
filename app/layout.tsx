@@ -10,7 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 const rubik = Rubik({
     weight: ["300", "400", "500", "700", "800", "900"],
     subsets: ["latin", "cyrillic"],
-    variable: '--font-exo-2'
+    variable: '--font-rubik'
 });
 
 const rubik_dirt = Rubik_Dirt({
@@ -32,7 +32,7 @@ export default async function RootLayout({children,}: Readonly<{ children: React
         <html suppressHydrationWarning lang="ru">
         <SessionProvider session={session}>
             <body
-                className={`${rubik.className} ${rubik_dirt.variable} antialiased dark:bg-dark-primary_bg_color `}
+                className={`${rubik.className} ${rubik_dirt.variable} dark:bg-dark-primary_bg_color `}
             >
             <ThemeProvider
                 attribute="class"

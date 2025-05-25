@@ -14,7 +14,7 @@ export interface ILobby {
 export interface ILobbyDoc extends ILobby, Document {}
 
 const LobbySchema = new Schema({
-    name: { type: String, required: true},
+    name: { type: String, required: true, unique: true },
     password: { type: String},
     scenario: { type: String, required: true},
     maxPlayer: { type: Number, default: 8, max: 12, min: 6},

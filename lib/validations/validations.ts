@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import {pick} from "next/dist/lib/pick";
 
 
 export const SignUpSchema = z.object({
@@ -60,3 +61,20 @@ export const AccountSchema = z.object({
         .string()
         .min(1, { message: "Provider Account ID is required." }),
 });
+
+export const LobbySchema = z.object({
+    name: z.string().min(1, { message: "Name is required." }).max(20, { message: "20 character is maximum." }),
+    password: z
+        .union([
+            z.string().length(0),
+            z.string().min(6).max(20),
+        ])
+        .optional(),
+    scenario: z.string(),
+    maxPlayer: z.number().min(6, { message: 'Minimum 6 player per one lobby'}).max(12, { message: "Maximum 12 player per one lobby" }),
+    isVisible: z.boolean(),
+})
+
+export const PasswordSchema = z.object({
+        password: z.string().min(6).max(20)
+})

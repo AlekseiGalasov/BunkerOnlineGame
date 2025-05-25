@@ -14,3 +14,19 @@ interface AuthWithOAuthParams {
         image?: string
     };
 }
+
+interface LobbyParams {
+    name: string
+    password?: string
+    scenario: string
+    maxPlayer: number
+    isVisible: boolean
+}
+
+interface LobbyIdParams {
+    id: string
+}
+
+interface JoinToLobbyParams extends LobbyIdParams {
+    password?: string;
+}
