@@ -3,25 +3,34 @@
 import React, {useEffect, useState} from 'react';
 import {joinToLobby, leaveFromLobby} from "@/lib/actions/lobby.action";
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import { Form } from 'react-hook-form';
 import LobbyPasswordForm from "@/components/forms/LobbyPasswordForm";
 import {toast} from "sonner";
-import {ROUTES} from "@/constants/route";
+import Preloader from "@/components/preloader/Preloader";
+import LobbyBoard from "@/components/lobby/LobbyBoard";
 
-const LobbyManager = ({lobbyId}: {lobbyId: string}) => {
+const LobbyManager = ({lobbyId}: { lobbyId: string }) => {
 
     const [playerStatus, setPlayerStatus] = useState('waiting');
 
     useEffect(() => {
         async function connectToLobby() {
-            const response = await joinToLobby({password: '', id: lobbyId})
+            const response = await joinToLobby({id: lobbyId})
             console.log(response)
             if (response.error?.message === 'pass_required') {
                 setPlayerStatus('need_pass')
+                return
+            }
+            if (response.error) {
+                setPlayerStatus('error')
+                toast(`Error`, {
+                    description: response.error.message
+                })
             }
             if (response.success) {
                 setPlayerStatus('joined')
+                toast(`Success`, {
+                    description: 'Successfully joined'
+                })
             }
         }
 
@@ -38,23 +47,21 @@ const LobbyManager = ({lobbyId}: {lobbyId: string}) => {
     }
 
     const commitPassword = async (password: string) => {
-        const result = await joinToLobby({id: lobbyId, password })
-        console.log(result)
-
+        const result = await joinToLobby({id: lobbyId, password})
         if (result?.success) {
             toast(`Success`, {
-                description: 'Signed in successfully'
+                description: 'Successfully joined'
             })
             setPlayerStatus('joined')
         } else {
-            toast(`Error ${result.status}`,{
+            toast(`Error ${result.status}`, {
                 description: `Error ${result.error?.message}`,
             })
         }
     }
 
-    if (playerStatus === 'need_pass') {
-        return <LobbyPasswordForm lobbyId={lobbyId} commitPassword={commitPassword} />
+    if (playerStatus === 'waiting') {
+        return <Preloader />
     }
 
     if (playerStatus === 'joined') {
@@ -66,12 +73,11 @@ const LobbyManager = ({lobbyId}: {lobbyId: string}) => {
         )
     }
 
-    return (
-        <div>
-            <Button onClick={handleLeave}>Leave from lobby</Button>
-            {playerStatus}
-        </div>
-    );
+    if (playerStatus === 'need_pass') {
+        return <LobbyPasswordForm lobbyId={lobbyId} commitPassword={commitPassword}/>
+    }
+
+    return <LobbyBoard />
 };
 
 export default LobbyManager;

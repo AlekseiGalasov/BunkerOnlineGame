@@ -9,13 +9,15 @@ const formatResponse = (
     responseType: Responsetype,
     status: number,
     message: string,
-    errors?: Record<string, string[]>
+    errors?: Record<string, string[]>,
+    code?: string
 ) => {
     const responseContent = {
         success: false,
         error: {
             message,
-            details: errors
+            details: errors,
+            code
         }
     }
 
@@ -35,6 +37,7 @@ const handleError = (
             error.statusCode,
             error.message,
             error.errors,
+            error.code
         )
     }
 
@@ -45,13 +48,13 @@ const handleError = (
             responseType,
             validationError.statusCode,
             validationError.message,
-            validationError.errors
+            validationError.errors,
         )
     }
 
     if (error instanceof Error) {
         console.error(error.message)
-        return formatResponse(responseType, 500, error.message)
+        return formatResponse(responseType, 500, error.message, undefined , '')
     }
     console.error({err: error}, 'An unexpected error occurred')
     return formatResponse(responseType, 500, 'An unexpected error occurred')

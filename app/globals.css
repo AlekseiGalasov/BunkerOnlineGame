@@ -121,6 +121,19 @@
   --hazard-gradient: linear-gradient(45deg, #FFC107 0%, #388E3C 100%);
 }
 
+@theme {
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-30deg);
+    }
+    50% {
+      transform: rotate(30deg);
+    }
+  }
+}
+
 @layer utilities {
     .toggler {
       @apply top-0.5 absolute block w-[25] h-[25] bg-primary-foreground z-20 rounded-full

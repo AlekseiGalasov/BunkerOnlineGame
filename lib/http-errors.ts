@@ -3,15 +3,18 @@
 export class RequestError extends Error {
     statusCode: number;
     errors?: Record<string, string[]>
+    code?: string;
 
     constructor(
         statusCode: number,
         message: string,
         errors?: Record<string, string[]>,
+        code?: string,
 
     ) {
         super(message);
         this.statusCode = statusCode
+        this.code = code
         this.errors = errors
         this.name = 'RequestError'
     }
@@ -47,9 +50,10 @@ export class NotFoundError extends RequestError {
 }
 
 export class ForbiddenError extends RequestError {
-    constructor(message: string = 'Forbidden') {
+    constructor(message: string = 'Forbidden', code: string = 'forbidden') {
         super(404, message);
         this.name = 'ForbiddenError'
+        this.code = code
     }
 }
 

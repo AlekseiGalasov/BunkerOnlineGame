@@ -7,6 +7,7 @@ import handleError from "@/handlers/error";
 import Lobby, {ILobbyDoc} from "@/models/Lobby.model";
 import {revalidatePath} from "next/cache";
 import {ROUTES} from "@/constants/route";
+import {ForbiddenError, NotFoundError} from "@/lib/http-errors";
 
 export async function createLobby(params: LobbyParams): Promise<ActionResponse<ILobbyDoc>> {
 
@@ -24,13 +25,13 @@ export async function createLobby(params: LobbyParams): Promise<ActionResponse<I
     const userId = validationResult.session?.user?.id
 
     try {
-        let existingLobby = await Lobby.findOne({name: name, status: {$in: ['active', 'waiting']}});
+        const existingLobby = await Lobby.findOne({name: name, status: {$in: ['active', 'waiting']}});
 
         if (existingLobby) {
-            throw new Error(`Lobby with ${name} already exists `);
+            throw new Error(`Lobby with ${name} already exists`);
         }
 
-        let newLobby = await Lobby.create({
+        const newLobby = await Lobby.create({
             name,
             password,
             scenario,
@@ -112,7 +113,7 @@ export async function joinToLobby(params: JoinToLobbyParams): Promise<ActionResp
         },);
 
         if (!existingLobby) {
-            throw new Error(`lobby not exist or already closed`);
+            throw new NotFoundError(`lobby not exist or already closed`);
         }
 
         if (existingLobby.players.includes(userId)) {
@@ -125,7 +126,7 @@ export async function joinToLobby(params: JoinToLobbyParams): Promise<ActionResp
 
         if (existingLobby.password) {
             if (!password) {
-                throw new Error(`pass_required`);
+                throw new ForbiddenError('Message', 'code');
             }
             if (existingLobby.password !== password) {
                 throw new Error(`Wrong Password!`);

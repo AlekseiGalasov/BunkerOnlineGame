@@ -5,8 +5,6 @@ const HomePage = async () => {
 
     const session = await auth()
 
-    console.log(session)
-
     return (
         <div>
             <span className='p-10 text-radiation-yellow'>HomePage</span>
