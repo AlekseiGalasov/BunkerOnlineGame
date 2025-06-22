@@ -10,7 +10,6 @@ export class RequestError extends Error {
         message: string,
         errors?: Record<string, string[]>,
         code?: string,
-
     ) {
         super(message);
         this.statusCode = statusCode
@@ -43,15 +42,16 @@ export class ValidationError extends RequestError {
 }
 
 export class NotFoundError extends RequestError {
-    constructor(resource: string) {
+    constructor(resource: string, code?: string) {
         super(404, `${resource} not found`);
         this.name = 'NotFoundError'
+        this.code = code
     }
 }
 
 export class ForbiddenError extends RequestError {
     constructor(message: string = 'Forbidden', code: string = 'forbidden') {
-        super(404, message);
+        super(403, message);
         this.name = 'ForbiddenError'
         this.code = code
     }
@@ -61,5 +61,13 @@ export class UnauthorizedError extends RequestError {
     constructor(message: string = 'Unauthorized') {
         super(401, message);
         this.name = 'UnauthorizedError'
+    }
+}
+
+export class CustomError extends RequestError {
+    constructor(message: string = 'Forbidden', code: string = 'forbidden', statusCode: number = 500) {
+        super(statusCode, message);
+        this.name = 'Error'
+        this.code = code
     }
 }

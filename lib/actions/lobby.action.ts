@@ -1,13 +1,15 @@
 'use server'
 
-import {ActionResponse, ErrorResponse} from "@/types/global";
+import {ActionResponse, ErrorResponse, Lobby as LobbyInterface} from "@/types/global";
 import action from "@/handlers/action";
-import {LobbySchema} from "@/lib/validations/validations";
+import {LobbySchema, PaginationSearchParamsSchema} from "@/lib/validations/validations";
 import handleError from "@/handlers/error";
-import Lobby, {ILobbyDoc} from "@/models/Lobby.model";
+import Lobby, {ILobby, ILobbyDoc} from "@/models/Lobby.model";
 import {revalidatePath} from "next/cache";
 import {ROUTES} from "@/constants/route";
-import {ForbiddenError, NotFoundError} from "@/lib/http-errors";
+import {CustomError, ForbiddenError, NotFoundError} from "@/lib/http-errors";
+import bcrypt from "bcryptjs";
+import { FilterQuery } from "mongoose";
 
 export async function createLobby(params: LobbyParams): Promise<ActionResponse<ILobbyDoc>> {
 
@@ -31,9 +33,14 @@ export async function createLobby(params: LobbyParams): Promise<ActionResponse<I
             throw new Error(`Lobby with ${name} already exists`);
         }
 
+        let hashedPassword;
+        if (password) {
+            hashedPassword = await bcrypt.hash(password, 12)
+        }
+
         const newLobby = await Lobby.create({
             name,
-            password,
+            password: hashedPassword,
             scenario,
             maxPlayer,
             players: [],
@@ -77,7 +84,7 @@ export async function leaveFromLobby(params: LobbyIdParams): Promise<ActionRespo
         }
 
         if (existingLobby.players.length === 1) {
-            existingLobby.status = 'closed'
+            existingLobby.status = 'waiting' // set to closed in prod test!!!!
         }
 
         existingLobby.players.pull(userId)
@@ -91,7 +98,7 @@ export async function leaveFromLobby(params: LobbyIdParams): Promise<ActionRespo
     }
 }
 
-export async function joinToLobby(params: JoinToLobbyParams): Promise<ActionResponse<ILobbyDoc>> {
+export async function joinToLobby(params: JoinToLobbyParams): Promise<ActionResponse<LobbyInterface>> {
 
     const validationResult = await action({
         params,
@@ -107,36 +114,126 @@ export async function joinToLobby(params: JoinToLobbyParams): Promise<ActionResp
 
     try {
 
-        const existingLobby = await Lobby.findOne({
+        let existingLobby = await Lobby.findOne({
             _id: id,
             status: {$in: ['active', 'waiting']},
-        },);
+        },).populate('players');
 
         if (!existingLobby) {
-            throw new NotFoundError(`lobby not exist or already closed`);
+            throw new NotFoundError(`lobby not exist or already closed`, 'not_exist');
         }
 
-        if (existingLobby.players.includes(userId)) {
+        if (Object.values(existingLobby.players).some(player => player.id === userId)) {
             return {success: true, data: JSON.parse(JSON.stringify(existingLobby))};
         }
 
         if (existingLobby.players.length >= existingLobby.maxPlayer) {
-            throw new Error(`lobby already full`);
+            throw new CustomError('Lobby already full', 'full_lobby', 409);
         }
 
         if (existingLobby.password) {
             if (!password) {
-                throw new ForbiddenError('Message', 'code');
+                throw new ForbiddenError('Required a password', 'required_password');
             }
-            if (existingLobby.password !== password) {
-                throw new Error(`Wrong Password!`);
+            const isValidPassword = await bcrypt.compare(password, existingLobby.password!)
+
+            if (!isValidPassword) {
+                throw new ForbiddenError('Wrong password', 'invalid_password');
             }
         }
 
         existingLobby.players.push(userId)
         await existingLobby.save()
 
+        existingLobby = await Lobby.findOne({
+            _id: id,
+            status: {$in: ['active', 'waiting']},
+        },).populate('players');
+
         return {success: true, data: JSON.parse(JSON.stringify(existingLobby))};
+    } catch (error) {
+        return handleError(error, 'server') as ErrorResponse
+    }
+}
+
+export async function getAllLobbies(params: PaginationSearchParams): Promise<ActionResponse<{lobbies: LobbyInterface[], isNext: boolean}>> {
+
+    const validationResult = await action({
+        params,
+        schema: PaginationSearchParamsSchema,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse
+    }
+
+    const { sort, filter, query, pageSize = 5, page = 1 } = validationResult.params as PaginationSearchParams
+    const skip = (Number(page) - 1) * pageSize
+    const limit = Number(pageSize)
+
+    //const filterQuery: FilterQuery<typeof Lobby> = {}
+
+    try {
+
+        const totalLobbies = await Lobby.countDocuments({
+            isVisible: true,
+            password: {$not: {$eq: ''}},
+            status: {$in: ['active', 'waiting']},
+        })
+
+        const lobbies = await Lobby.find({
+            isVisible: true,
+            password: {$not: {$eq: ''}},
+            status: {$in: ['active', 'waiting']},
+        })
+            .select('name status scenario maxPlayer createdAt players password')
+            .lean({ virtuals: ['isProtected', 'countPlayers']})
+            .skip(skip)
+            .limit(limit)
+
+        if (!lobbies) {
+            throw new NotFoundError('Lobbies not found')
+        }
+
+        lobbies.forEach((lobby) => {
+            delete lobby.password;
+            delete lobby.players;
+        });
+
+        const isNext = totalLobbies > skip + lobbies.length
+        return { success: true, data: {lobbies: JSON.parse(JSON.stringify(lobbies)), isNext }}
+
+    } catch (error) {
+        return handleError(error, 'server') as ErrorResponse
+    }
+}
+
+export async function getLobby(params: LobbyIdParams): Promise<ActionResponse<{lobby: LobbyInterface[]}>> {
+
+    const validationResult = await action({
+        params,
+        authorize: true
+    })
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse
+    }
+
+    const {id} = validationResult.params as LobbyIdParams
+
+    try {
+
+        const lobby = await Lobby.findById(id)
+            .select('name status scenario maxPlayer createdAt players')
+            .populate('players')
+            .lean()
+
+        if (!lobby) {
+            throw new NotFoundError('lobby not found')
+        }
+
+        return { success: true, data: {lobby: JSON.parse(JSON.stringify(lobby)) }}
+
     } catch (error) {
         return handleError(error, 'server') as ErrorResponse
     }

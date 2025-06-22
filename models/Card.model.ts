@@ -1,10 +1,15 @@
 import {model, models, Schema } from "mongoose";
 
 export interface ICard {
+    _id: string
     name: string
     type: "profession" | "health" | "phobia" | "hobby" | "luggage" | "special"
     description: string
-    tags: string[]
+    level: number
+    image?: string
+    tags?: string[]
+    updatedAt: string
+    createdAt: string
 }
 
 export interface ICardDoc extends ICard, Document {}
@@ -13,10 +18,11 @@ const CardSchema = new Schema({
     name: { type: String, required: true},
     type: { type: String, enum: ["profession", "health", "phobia", "hobby", "luggage", "special"], required: true},
     description: { type: String, required: true},
+    level: { type: Number, min: 1, max: 5, default: 1},
+    image: { type: String},
     tags: [{
         type: Schema.Types.ObjectId,
         ref: 'Tag',
-        required: true
     }]
 }, {
     timestamps: true

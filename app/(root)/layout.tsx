@@ -4,12 +4,15 @@ import NavBar from "@/components/navigation/navBar/NavBar";
 const Layout = ({children}: { children: React.ReactNode }) => {
 
     return (
-        <>
+        <main>
             <NavBar/>
-            <section className="flex min-h-screen flex-1 flex-col p-6 max-md:pb-14 sm:px-14">
-                <div className="mx-auto w-full max-w-[1920px]">{children}</div>
+            <section
+                className='bg-[url("/images/lobby_bg.png")] bg-cover bg-top bg-no-repeat w-full h-[100vh] flex flex-col pt-24 max-md:pb-14 sm:px-14'>
+                <div className=' mx-auto w-full max-w-[1920px]'>
+                    {children}
+                </div>
             </section>
-        </>
+        </main>
     );
 };
 

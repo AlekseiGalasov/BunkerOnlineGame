@@ -1,4 +1,5 @@
 import {model, models, Schema } from "mongoose";
+import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 
 export interface ILobby {
     name: string
@@ -27,8 +28,18 @@ const LobbySchema = new Schema({
     isVisible: { type: Boolean, required: true},
     status: { type: String, enum: ['closed', 'active', 'waiting'], required: true }
 }, {
-    timestamps: true
+    timestamps: true,
 })
+
+LobbySchema.virtual('isProtected').get(function () {
+    return this.password ? this.password !== '' : false;
+});
+
+LobbySchema.virtual('countPlayers').get(function () {
+    return this.players.length;
+});
+
+LobbySchema.plugin(mongooseLeanVirtuals)
 
 const Lobby = models?.Lobby || model<ILobby>("Lobby", LobbySchema);
 

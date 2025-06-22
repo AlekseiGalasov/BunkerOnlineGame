@@ -9,12 +9,14 @@ import Link from "next/link";
 const NavBar = async () => {
 
     const session = await auth()
-    const userId = session?.user?.name
+    const userId = session?.user?.id
 
     return (
-        <section className='w-full bg-sidebar'>
-            <nav className='max-w-[1920px] m-auto flex justify-between min-h-[46px] bg-sidebar py-4 px-10 items-center '>
-                <h1 className='font-rubik-dirt text-2xl primary-text-gradient'>BunkerPetProject</h1>
+        <section className='w-full bg-sidebar flex justify-center'>
+            <nav className='max-w-[1920px] opacity-80 w-full flex justify-between fixed z-40 min-h-[46px] bg-sidebar py-4 px-10 items-center '>
+                <Link href={ROUTES.HOME}>
+                    <h1 className='font-rubik-dirt text-2xl primary-text-gradient'>BunkerPetProject</h1>
+                </Link>
                 <div className='flex gap-4'>
                     <ThemeToggler/>
                     {userId ? <form className='flex flex-col' action={async () => {

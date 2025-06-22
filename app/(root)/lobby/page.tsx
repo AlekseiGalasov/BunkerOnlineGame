@@ -1,9 +1,35 @@
 import React from 'react';
+import {auth} from "@/auth";
+import {redirect} from "next/navigation";
+import {ROUTES} from "@/constants/route";
+import LobbyTable from "@/components/lobby/LobbyTable";
+import LobbySearch from "@/components/lobby/LobbySearch";
 
-const LobbyPage = () => {
+export interface SearchParams {
+    searchParams: Promise<{ [key: string]: string }>
+}
+
+const LobbyPage = async ({searchParams}: SearchParams) => {
+
+    const session = await auth()
+
+    if (!session) {
+        redirect(ROUTES.SIGN_IN)
+    }
+
     return (
-        <div>
-           LobbyPage
+        <div className='flex flex-col items-center gap-4'>
+            <div className='flex flex-row items-center gap-4'>
+                <h2 className='font-rubik-dirt text-2xl primary-text-gradient'>Choose the lobby</h2>
+            </div>
+            <div className='flex w-full gap-4'>
+                <div className='flex flex-col border-2 rounded-2xl shadow-lg py-10 px-6 w-3/5'>
+                    <LobbyTable searchParams={searchParams} />
+                </div>
+                <div className='border-2 rounded-2xl shadow-lg py-10 px-6 w-2/5'>
+                    <LobbySearch searchParams={searchParams} />
+                </div>
+            </div>
         </div>
     );
 };

@@ -12,7 +12,7 @@ import {ActionResponse} from "@/types/global";
 import CreateLobbyForm from "@/components/forms/CreateLobbyForm";
 
 interface LobbyPasswordFormProps {
-    commitPassword: (password: string) => Promise<ActionResponse>
+    commitPassword: (password: string) => void
 }
 
 const LobbyPasswordForm = ({commitPassword}: LobbyPasswordFormProps) => {
@@ -24,8 +24,8 @@ const LobbyPasswordForm = ({commitPassword}: LobbyPasswordFormProps) => {
         },
     })
 
-    const handleSubmit = async (data) => {
-        await commitPassword(data.password);
+    const handleSubmit = async (data: { password: string; }) => {
+        commitPassword(data.password);
     }
 
     return (
@@ -48,7 +48,7 @@ const LobbyPasswordForm = ({commitPassword}: LobbyPasswordFormProps) => {
                                     <FormControl>
                                         <Input
                                             required
-                                            type={'text'}
+                                            type='password'
                                             {...field}
                                             className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border"
                                         />

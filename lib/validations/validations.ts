@@ -75,6 +75,29 @@ export const LobbySchema = z.object({
     isVisible: z.boolean(),
 })
 
+export const CardSchema = z.object({
+    name: z.string().min(1, { message: "Card name is required." }).max(20, { message: "20 character is maximum." }),
+    type: z.enum(["profession", "health", "phobia", "hobby", "luggage", "special"]),
+    description: z.string().min(1, { message: 'Card description is required'}).max(50, { message: "Description must contain maximum 50 characters or less" }),
+    level: z.number().min(1, { message: 'Minimum level is 1'}).max(5, { message: "Minimum level is 5" }),
+    scenario: z.array(z.object({
+        value: z.string(),
+        checked: z.boolean(),
+        label: z.string()
+    })).refine(
+        (scenarios) => scenarios.some((item) => item.checked),
+        { message: 'At least one scenario must be selected' }
+    ),
+})
+
 export const PasswordSchema = z.object({
         password: z.string().min(6).max(20)
+})
+
+export const PaginationSearchParamsSchema = z.object({
+    page: z.number().int().positive().default(1),
+    pageSize: z.number().int().positive().default(10),
+    query: z.string().optional(),
+    filter: z.string().optional(),
+    sort: z.string().optional(),
 })

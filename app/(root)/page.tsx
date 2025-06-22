@@ -1,15 +1,20 @@
+'use client'
+
 import React from 'react';
-import {auth} from "@/auth";
+import Link from "next/link";
+import {ROUTES} from "@/constants/route";
+import usePageAnimation from "@/components/animations/usePageAnimation";
+import {Button} from "@/components/ui/button";
 
-const HomePage = async () => {
+const HomePage = () => {
 
-    const session = await auth()
+    const [handleNavigation] = usePageAnimation()
 
     return (
         <div>
-            <span className='p-10 text-radiation-yellow'>HomePage</span>
-            <span className='p-10 text-toxic-green'>HomePage</span>
-            <span className='p-10 primary-text-gradient'>HomePage</span>
+            <Button onClick={() => handleNavigation(ROUTES.CREATE_LOBBY)} className='p-10 text-radiation-yellow'>Lobbies</Button>
+            <Link href={ROUTES.CREATE_LOBBY} className='p-10 text-radiation-yellow'>Create lobby</Link>
+            <Link href={ROUTES.CREATE_CARD} className='p-10 text-radiation-yellow'>Create Card</Link>
         </div>
     );
 };

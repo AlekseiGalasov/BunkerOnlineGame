@@ -23,6 +23,29 @@ interface LobbyParams {
     isVisible: boolean
 }
 
+interface ScenarioParams {
+    label: string
+    checked: boolean
+    value: string
+}
+
+interface CardParams {
+    name: string
+    type: "profession" | "health" | "phobia" | "hobby" | "luggage" | "special"
+    description: string
+    level: number
+    scenario: ScenarioParams[]
+}
+
+interface PaginationSearchParams {
+    page?: number
+    pageSize?: number
+    query?: string
+    filter?: string
+    sort?: string
+}
+
+
 interface LobbyIdParams {
     id: string
 }

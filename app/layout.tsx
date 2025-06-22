@@ -3,9 +3,10 @@ import type {Metadata} from "next";
 import {Rubik_Dirt, Exo_2, Rubik} from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/app/context/Theme";
-import { SessionProvider } from "next-auth/react";
+import {SessionProvider} from "next-auth/react";
 import {auth} from "@/auth";
-import { Toaster } from "@/components/ui/sonner";
+import {Toaster} from "@/components/ui/sonner";
+import PageAnimation from "@/components/animations/PageAnimation";
 
 const rubik = Rubik({
     weight: ["300", "400", "500", "700", "800", "900"],
@@ -40,8 +41,10 @@ export default async function RootLayout({children,}: Readonly<{ children: React
                 enableSystem
                 disableTransitionOnChange
             >
-                {children}
-                <Toaster />
+                <PageAnimation>
+                    {children}
+                </PageAnimation>
+                <Toaster/>
             </ThemeProvider>
             </body>
         </SessionProvider>

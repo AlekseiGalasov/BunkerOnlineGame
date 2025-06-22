@@ -4,5 +4,7 @@ export const ROUTES = {
     SIGN_UP: '/sign-up',
     LOBBIES: '/lobby',
     CREATE_LOBBY: '/lobby/create',
+    CARDS: '/cards',
+    CREATE_CARD: '/cards/create',
     LOBBY: (id: string) => `/lobby/${id}`,
 }
