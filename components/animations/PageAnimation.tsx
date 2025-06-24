@@ -13,24 +13,26 @@ const PageAnimation = ({children}: { children: React.ReactNode }) => {
     useEffect(() => {
 
         const handleRouteChangeStart = () => {
-            timeline.to('.valve', {scale: 1.2, delay: 1, duration: 1})
-            timeline.to('.valve', {rotation: 180, repeat: 1, duration: 1})
-            timeline.to('.valve', {scale: 1, duration: 1})
-            timeline.fromTo('.leftSide', {x: 0}, {x: '-100%', duration: 2}, "4")
-            timeline.fromTo('.rightSide', {width: '50%'}, {width: 0, duration: 2}, "4")
+            timeline.fromTo('.leftSide', {width: '50%'}, {width: 0, duration: 1.5}, 0.5)
+            timeline.fromTo('.rightSide', {width: '50%'}, {width: 0, duration: 1.5}, 0.5)
         };
 
         handleRouteChangeStart()
 
-    }, [pathname])
+        return () => {
+            timeline.kill();
+        };
+
+    }, [pathname, timeline])
 
     return (
         <>
-            <div className='leftSide h-[calc(100%-68px)] bg-stone-800 w-[50%] absolute top-[68px] left-0'>
-                <Image className='valve absolute right-5 top-[30%]' src={Valve} alt='valve' width={200} height={200}/>
+            <div className='bg-[url("/images/texture_animation.jpg")] bg-left bg-cover bg-no-repeat overflow-hidden bg-blend-darken z-30 leftSide h-[calc(100%-68px)] bg-stone-800 w-[50%] absolute top-[68px] left-0'>
+                <div className='bg-[url("/images/hazard_line.jpg")] bg-right-bottom w-[20px] absolute right-0 h-full bg-repeat' ></div>
             </div>
                 {children}
-            <div className='rightSide h-[calc(100%-68px)]  bg-stone-800 w-[50%] absolute top-[68px] right-0'>
+            <div className='bg-[url("/images/texture_animation.jpg")] bg-left bg-cover bg-no-repeat overflow-hidden rotate-180 bg-blend-darken z-30 rightSide h-[calc(100%-68px)] bg-stone-800 w-[50%] absolute top-[68px] right-0'>
+                <div className='bg-[url("/images/hazard_line.jpg")] bg-right-bottom w-[20px] absolute right-0 h-full bg-repeat' ></div>
             </div>
         </>
     );

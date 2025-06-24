@@ -11,11 +11,10 @@ const UsePageAnimation = () => {
         if (isAnimating) return; // Prevent duplicate clicks
         setIsAnimating(true);
 
-        gsap.fromTo('.leftSide', {width: 0}, {width: '50%', duration: 2, ease: "bounce.out"})
-        gsap.fromTo('.rightSide', {width: 0}, {width: '50%', duration: 2,ease: "bounce.out", onComplete: () => {
+        gsap.fromTo('.leftSide', {width: 0}, {width: '50%', duration: 1.5, ease: "bounce.out"})
+        gsap.fromTo('.rightSide', {width: 0}, {width: '50%', duration: 1.5,ease: "bounce.out", onComplete: () => {
                 router.push(url);
                 setIsAnimating(false);
-
         }})
     };
 

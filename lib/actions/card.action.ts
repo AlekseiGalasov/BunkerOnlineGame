@@ -2,8 +2,10 @@
 
 import Card, {ICard} from "@/models/Card.model";
 import action from "@/handlers/action";
-import {CardSchema} from "@/lib/validations/validations";
+import {CardSchema, PaginationSearchParamsSchema} from "@/lib/validations/validations";
 import handleError from "@/handlers/error";
+import Lobby from "@/models/Lobby.model";
+import {NotFoundError} from "@/lib/http-errors";
 
 
 export async function createCard(params: CardParams): Promise<ActionResponse<ICard>> {
@@ -37,4 +39,45 @@ export async function createCard(params: CardParams): Promise<ActionResponse<ICa
         return handleError(error, 'server') as ErrorResponse
     }
 
+}
+
+export async function getAllCards(params: PaginationSearchParams): Promise<ActionResponse<{cards: ICard[], isNext: boolean}>> {
+
+    const validationResult = await action({
+        params,
+        schema: PaginationSearchParamsSchema,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse
+    }
+
+    const { sort, query, pageSize = 5, page = 1, cardType } = validationResult.params as PaginationSearchParams
+    const skip = (Number(page) - 1) * pageSize
+    const limit = Number(pageSize)
+
+    let sortCriteria = {}
+
+    if (!cardType || cardType !== 'all') {
+        sortCriteria = {type: cardType}
+    }
+
+    try {
+
+        const totalCards = await Card.countDocuments()
+
+        const cards = await Card.find(sortCriteria)
+            .skip(skip)
+            .limit(limit)
+
+        if (!cards) {
+            throw new NotFoundError('Cards not found')
+        }
+
+        const isNext = totalCards > skip + cards.length
+        return { success: true, data: {cards: JSON.parse(JSON.stringify(cards)), isNext }}
+
+    } catch (error) {
+        return handleError(error, 'server') as ErrorResponse
+    }
 }

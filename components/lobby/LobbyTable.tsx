@@ -10,8 +10,6 @@ const LobbyTable = async ({searchParams}: SearchParams) => {
 
     const {query, filter, page, pageSize} = await searchParams
 
-    console.log(query)
-
     const {data, error} = await getAllLobbies({
         query: query || "",
         filter: filter || "",

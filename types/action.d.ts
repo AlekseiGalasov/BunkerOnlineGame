@@ -43,6 +43,7 @@ interface PaginationSearchParams {
     query?: string
     filter?: string
     sort?: string
+    cardType?: "profession" | "health" | "phobia" | "hobby" | "luggage" | "special" | "all"
 }
 
 

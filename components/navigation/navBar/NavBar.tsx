@@ -13,7 +13,7 @@ const NavBar = async () => {
 
     return (
         <section className='w-full bg-sidebar flex justify-center'>
-            <nav className='max-w-[1920px] opacity-80 w-full flex justify-between fixed z-40 min-h-[46px] bg-sidebar py-4 px-10 items-center '>
+            <nav className='max-w-[1920px] w-full flex justify-between fixed z-40 min-h-[46px] bg-sidebar py-4 px-10 items-center '>
                 <Link href={ROUTES.HOME}>
                     <h1 className='font-rubik-dirt text-2xl primary-text-gradient'>BunkerPetProject</h1>
                 </Link>

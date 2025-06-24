@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react';
-import Link from "next/link";
 import {ROUTES} from "@/constants/route";
 import usePageAnimation from "@/components/animations/usePageAnimation";
 import {Button} from "@/components/ui/button";
@@ -11,11 +10,18 @@ const HomePage = () => {
     const [handleNavigation] = usePageAnimation()
 
     return (
-        <div>
-            <Button onClick={() => handleNavigation(ROUTES.CREATE_LOBBY)} className='p-10 text-radiation-yellow'>Lobbies</Button>
-            <Link href={ROUTES.CREATE_LOBBY} className='p-10 text-radiation-yellow'>Create lobby</Link>
-            <Link href={ROUTES.CREATE_CARD} className='p-10 text-radiation-yellow'>Create Card</Link>
-        </div>
+        <section className='flex flex-col items-center gap-10 mt-16'>
+            <div className='p-10 px-20 backdrop-blur-sm flex flex-col gap-10 w-1/3 justify-center border-2 rounded-sm'>
+                <Button onClick={() => handleNavigation(ROUTES.CREATE_CARD)}
+                        className='cursor-pointer p-6 '>Create card</Button>
+                <Button onClick={() => handleNavigation(ROUTES.CARDS)}
+                        className='cursor-pointer p-6 '>Cards</Button>
+                <Button onClick={() => handleNavigation(ROUTES.CREATE_LOBBY)}
+                        className='cursor-pointer p-6 '>Create lobbies</Button>
+                <Button onClick={() => handleNavigation(ROUTES.LOBBIES)}
+                        className='cursor-pointer p-6 '>Lobbies</Button>
+            </div>
+        </section>
     );
 };
 
