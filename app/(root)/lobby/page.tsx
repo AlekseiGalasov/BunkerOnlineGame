@@ -4,6 +4,7 @@ import {redirect} from "next/navigation";
 import {ROUTES} from "@/constants/route";
 import LobbyTable from "@/components/lobby/LobbyTable";
 import LobbySearch from "@/components/lobby/LobbySearch";
+import {getAllLobbies} from "@/lib/actions/lobby.action";
 
 export interface SearchParams {
     searchParams: Promise<{ [key: string]: string }>
@@ -12,10 +13,18 @@ export interface SearchParams {
 const LobbyPage = async ({searchParams}: SearchParams) => {
 
     const session = await auth()
+    const {query, filter, page, pageSize} = await searchParams
 
     if (!session) {
         redirect(ROUTES.SIGN_IN)
     }
+
+    const {data, error, success} = await getAllLobbies({
+        query: query || "",
+        filter: filter || "",
+        pageSize: Number(pageSize) || 10,
+        page: Number(page) || 1,
+    });
 
     return (
         <div className='flex flex-col items-center gap-4'>
@@ -24,7 +33,7 @@ const LobbyPage = async ({searchParams}: SearchParams) => {
             </div>
             <div className='flex w-full gap-4'>
                 <div className='flex flex-col border-2 rounded-2xl shadow-lg py-10 px-6 w-3/5'>
-                    <LobbyTable searchParams={searchParams} />
+                    <LobbyTable data={data} error={error} success={success} />
                 </div>
                 <div className='border-2 rounded-2xl shadow-lg py-10 px-6 w-2/5'>
                     <LobbySearch searchParams={searchParams} />

@@ -3,8 +3,6 @@
 import React, {useEffect} from 'react';
 import gsap from "gsap";
 import {usePathname} from "next/navigation";
-import Valve from '@/public/images/valve.svg';
-import Image from "next/image";
 
 const PageAnimation = ({children}: { children: React.ReactNode }) => {
     const pathname = usePathname()

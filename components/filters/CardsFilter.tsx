@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react';
 import {Button} from "@/components/ui/button";
-import {formUrlQuery, removeKeysFromQuery} from "@/lib/url";
+import {addAndRemoveKeysFromQuery, formUrlQuery, removeKeysFromQuery} from "@/lib/url";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {cn} from "@/lib/utils";
 
@@ -16,16 +16,17 @@ const CardsFilter = () => {
 
     const changeFilterHandler = (card: AllowedCardsFilterType) => {
         if (selectedType === '' || selectedType !== card) {
-            const newUrl = formUrlQuery({
+            const newUrl = addAndRemoveKeysFromQuery({
                 params: searchParams.toString(),
                 value: card,
-                key: 'cardType'
+                key: 'cardType',
+                keysToRemove: ['page'],
             })
             router.push(newUrl, {scroll: false})
         } else {
             const newUrl = removeKeysFromQuery({
                 params: searchParams.toString(),
-                keysToRemove: ['cardType'],
+                keysToRemove: ['cardType', 'page'],
             })
             router.push(newUrl, {scroll: false})
         }

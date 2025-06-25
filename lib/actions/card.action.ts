@@ -41,7 +41,7 @@ export async function createCard(params: CardParams): Promise<ActionResponse<ICa
 
 }
 
-export async function getAllCards(params: PaginationSearchParams): Promise<ActionResponse<{cards: ICard[], isNext: boolean}>> {
+export async function getAllCards(params: PaginationSearchParams): Promise<ActionResponse<{cards: ICard[], isNext: boolean, totalPages: number}>> {
 
     const validationResult = await action({
         params,
@@ -64,8 +64,8 @@ export async function getAllCards(params: PaginationSearchParams): Promise<Actio
 
     try {
 
-        const totalCards = await Card.countDocuments()
-
+        const totalCards = await Card.countDocuments(sortCriteria)
+        const totalPages = Math.ceil(totalCards / limit)
         const cards = await Card.find(sortCriteria)
             .skip(skip)
             .limit(limit)
@@ -75,7 +75,7 @@ export async function getAllCards(params: PaginationSearchParams): Promise<Actio
         }
 
         const isNext = totalCards > skip + cards.length
-        return { success: true, data: {cards: JSON.parse(JSON.stringify(cards)), isNext }}
+        return { success: true, data: {cards: JSON.parse(JSON.stringify(cards)), isNext, totalPages }}
 
     } catch (error) {
         return handleError(error, 'server') as ErrorResponse

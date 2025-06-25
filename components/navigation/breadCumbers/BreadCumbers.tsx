@@ -29,7 +29,6 @@ const BreadCumbers = () => {
         };
     });
 
-
     const handleClick = (route: string) => {
         if (route === pathname) {
             return
@@ -43,8 +42,7 @@ const BreadCumbers = () => {
                 <BreadcrumbItem>
                     <Button className='cursor-pointer' variant='ghost' onClick={() => handleClick(ROUTES.HOME)}>Home</Button>
                 </BreadcrumbItem>
-                {
-                    pathArray.map(elem => (
+                { (pathArray.length >= 1 && pathArray[0].name !== '') && pathArray.map(elem => (
                         <>
                             <BreadcrumbSeparator/>
                             <BreadcrumbItem>

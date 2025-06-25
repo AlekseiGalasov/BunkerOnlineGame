@@ -12,7 +12,7 @@ const CardsPage = async ({searchParams}: SearchParams) => {
     const {success, data, error} = await getAllCards({
         query: query || "",
         filter: filter || "",
-        pageSize: Number(pageSize) || 20,
+        pageSize: Number(pageSize) || 10,
         page: Number(page) || 1,
         cardType: cardType || "all"
     });

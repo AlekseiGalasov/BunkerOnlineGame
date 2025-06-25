@@ -1,23 +1,32 @@
-import React from 'react';
+'use client'
+
+import React, {useState} from 'react';
 import ErrorRenderer from "@/components/ErrorRenderer";
 import LobbyRow from "@/components/lobby/LobbyRow";
-import {getAllLobbies} from "@/lib/actions/lobby.action";
-import {Pagination, PaginationContent, PaginationItem, PaginationLink} from '../ui/pagination';
-import {Button} from "@/components/ui/button";
-import {SearchParams} from "@/app/(root)/lobby/page";
+import PaginationComponent from "@/components/navigation/pagination/Pagination";
+import {ILobby} from "@/models/Lobby.model";
 
-const LobbyTable = async ({searchParams}: SearchParams) => {
+interface TableDataProps {
+    lobbies: ILobby[]
+    isNext: boolean
+    totalPages: number
+}
 
-    const {query, filter, page, pageSize} = await searchParams
+interface LobbyTableProps {
+    data: TableDataProps | undefined
+    success: boolean
+    error?: {
+        message: string
+        details?: Record<string, string[]>
+        code?: string
+    } | undefined
+}
 
-    const {data, error} = await getAllLobbies({
-        query: query || "",
-        filter: filter || "",
-        pageSize: Number(pageSize) || 10,
-        page: Number(page) || 1,
-    });
+const LobbyTable = ({error, data, success}: LobbyTableProps) => {
 
-    const {lobbies, isNext} = data
+    const [selectedLobby, setSelectedLobby] = useState<string | null>(null);
+
+    const {lobbies, isNext, totalPages} = data as TableDataProps
 
     if (error) {
         return <ErrorRenderer error={{message: error?.message}}/>
@@ -39,21 +48,9 @@ const LobbyTable = async ({searchParams}: SearchParams) => {
                 <div className='font-rubik-dirt text-xl text-toxic-green w-1/5'>PASSWORD</div>
             </div>
             {lobbies.length && lobbies.map((lobby: Lobby) => (
-                <LobbyRow key={lobby._id} lobby={lobby}/>
+                <LobbyRow setSelectedLobby={setSelectedLobby} selectedLobby={selectedLobby} key={lobby._id} lobby={lobby}/>
             ))}
-            <Pagination>
-                <PaginationContent>
-                    <PaginationItem>
-                        <Button className='cursor-pointer'>Prev page</Button>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#">1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <Button className='cursor-pointer' disabled={isNext}>Next page</Button>
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+            <PaginationComponent totalPages={totalPages}  />
         </section>
     );
 };

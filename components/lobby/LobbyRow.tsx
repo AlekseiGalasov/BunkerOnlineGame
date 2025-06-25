@@ -15,12 +15,13 @@ const SCENARIO_MAPPER = {
 
 interface LobbyRowParams {
     lobby: Lobby
+    selectedLobby: string | null
+    setSelectedLobby: (id: string | null) => void
 }
 
-const LobbyRow = ({lobby}: LobbyRowParams) => {
+const LobbyRow = ({lobby, setSelectedLobby, selectedLobby}: LobbyRowParams) => {
 
     const [clickCount, setClickCount] = useState(1);
-    const [selectedLobby, setSelectedLobby] = useState<string | null>(null);
     const timer = useRef<NodeJS.Timeout>()
     const router = useRouter()
 

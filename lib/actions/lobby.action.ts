@@ -156,7 +156,7 @@ export async function joinToLobby(params: JoinToLobbyParams): Promise<ActionResp
     }
 }
 
-export async function getAllLobbies(params: PaginationSearchParams): Promise<ActionResponse<{lobbies: LobbyInterface[], isNext: boolean}>> {
+export async function getAllLobbies(params: PaginationSearchParams): Promise<ActionResponse<{lobbies: LobbyInterface[], isNext: boolean, totalPages: number}>> {
 
     const validationResult = await action({
         params,
@@ -167,7 +167,7 @@ export async function getAllLobbies(params: PaginationSearchParams): Promise<Act
         return handleError(validationResult) as ErrorResponse
     }
 
-    const { sort, filter, query, pageSize = 5, page = 1 } = validationResult.params as PaginationSearchParams
+    const { pageSize = 5, page = 1 } = validationResult.params as PaginationSearchParams
     const skip = (Number(page) - 1) * pageSize
     const limit = Number(pageSize)
 
@@ -180,6 +180,7 @@ export async function getAllLobbies(params: PaginationSearchParams): Promise<Act
             password: {$not: {$eq: ''}},
             status: {$in: ['active', 'waiting']},
         })
+        const totalPages = totalLobbies > 0 ? Math.ceil(totalLobbies / limit) : 1
 
         const lobbies = await Lobby.find({
             isVisible: true,
@@ -201,7 +202,7 @@ export async function getAllLobbies(params: PaginationSearchParams): Promise<Act
         });
 
         const isNext = totalLobbies > skip + lobbies.length
-        return { success: true, data: {lobbies: JSON.parse(JSON.stringify(lobbies)), isNext }}
+        return { success: true, data: {lobbies: JSON.parse(JSON.stringify(lobbies)), isNext, totalPages }}
 
     } catch (error) {
         return handleError(error, 'server') as ErrorResponse

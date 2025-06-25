@@ -75,7 +75,7 @@ export const LobbySchema = z.object({
 })
 
 export const CardSchema = z.object({
-    name: z.string().min(1, { message: "Card name is required." }).max(20, { message: "20 character is maximum." }),
+    name: z.string().min(1, { message: "Card name is required." }).max(50, { message: "50 character is maximum." }),
     type: z.enum(["profession", "health", "phobia", "hobby", "luggage", "special"]),
     description: z.string().min(1, { message: 'Card description is required'}).max(250, { message: "Description must contain maximum 250 characters or less" }),
     level: z.number().min(1, { message: 'Minimum level is 1'}).max(5, { message: "Minimum level is 5" }),
