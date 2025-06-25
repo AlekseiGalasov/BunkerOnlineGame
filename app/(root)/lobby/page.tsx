@@ -22,7 +22,7 @@ const LobbyPage = async ({searchParams}: SearchParams) => {
     const {data, error, success} = await getAllLobbies({
         query: query || "",
         filter: filter || "",
-        pageSize: Number(pageSize) || 10,
+        pageSize: Number(pageSize) || 5,
         page: Number(page) || 1,
     });
 

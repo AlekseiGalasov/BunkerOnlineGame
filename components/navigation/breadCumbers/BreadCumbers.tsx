@@ -43,12 +43,12 @@ const BreadCumbers = () => {
                     <Button className='cursor-pointer' variant='ghost' onClick={() => handleClick(ROUTES.HOME)}>Home</Button>
                 </BreadcrumbItem>
                 { (pathArray.length >= 1 && pathArray[0].name !== '') && pathArray.map(elem => (
-                        <>
+                        <React.Fragment key={elem.route}>
                             <BreadcrumbSeparator/>
                             <BreadcrumbItem>
                                 <Button className='cursor-pointer' variant='ghost' onClick={() => handleClick(elem.route)}>{elem.name}</Button>
                             </BreadcrumbItem>
-                        </>
+                        </React.Fragment>
                     ))
                 }
             </BreadcrumbList>
