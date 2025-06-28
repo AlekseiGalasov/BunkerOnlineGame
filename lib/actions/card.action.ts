@@ -4,7 +4,6 @@ import Card, {ICard} from "@/models/Card.model";
 import action from "@/handlers/action";
 import {CardSchema, PaginationSearchParamsSchema} from "@/lib/validations/validations";
 import handleError from "@/handlers/error";
-import Lobby from "@/models/Lobby.model";
 import {NotFoundError} from "@/lib/http-errors";
 
 

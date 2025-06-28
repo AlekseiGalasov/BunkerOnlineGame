@@ -20,6 +20,11 @@ const HomePage = () => {
                         className='cursor-pointer p-6 '>Create lobbies</Button>
                 <Button onClick={() => handleNavigation(ROUTES.LOBBIES)}
                         className='cursor-pointer p-6 '>Lobbies</Button>
+                <Button onClick={() => handleNavigation(ROUTES.SCENARIOS)}
+                        className='cursor-pointer p-6 '>Scenarios</Button>
+                <Button onClick={() => handleNavigation(ROUTES.CREATE_SCENARIO)}
+                        className='cursor-pointer p-6 '>Create scenario</Button>
+
             </div>
         </section>
     );

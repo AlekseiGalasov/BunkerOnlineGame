@@ -4,7 +4,10 @@ export const ROUTES = {
     SIGN_UP: '/sign-up',
     LOBBIES: '/lobby',
     CREATE_LOBBY: '/lobby/create',
+    LOBBY: (id: string) => `/lobby/${id}`,
     CARDS: '/cards',
     CREATE_CARD: '/cards/create',
-    LOBBY: (id: string) => `/lobby/${id}`,
+    SCENARIOS: '/scenarios',
+    CREATE_SCENARIO: '/scenarios/create',
+    SCENARIO: (id: string) => `/scenarios/${id}`
 }

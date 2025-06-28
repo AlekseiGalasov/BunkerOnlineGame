@@ -6,8 +6,8 @@ import {addAndRemoveKeysFromQuery, formUrlQuery, removeKeysFromQuery} from "@/li
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {cn} from "@/lib/utils";
 
-type AllowedCardsFilterType = "profession" | "health" | "phobia" | "hobby" | "luggage" | "special" | "bio" | "all";
-const AllowedCardsFilter: AllowedCardsFilterType[] = ["all", "profession", "health", "phobia", "hobby", "luggage", "bio"];
+type AllowedCardsFilterType = "profession" | "health" | "phobia" | "hobby" | "luggage" | "special" | "bio" | "additional" | "all";
+const AllowedCardsFilter: AllowedCardsFilterType[] = ["all", "profession", "health", "phobia", "hobby", "luggage", "bio", "additional"];
 
 const CardsFilter = () => {
     const searchParams = useSearchParams()

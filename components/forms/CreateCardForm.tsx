@@ -82,7 +82,7 @@ const CreateCardForm = () => {
                     render={({field}) => (
                         <FormItem className="flex w-full flex-col gap-2.5">
                             <FormLabel className='text-toxic-green'>
-                                🎮 Creating a game card
+                                Card name
                             </FormLabel>
                             <FormControl>
                                 <Input
@@ -154,7 +154,7 @@ const CreateCardForm = () => {
                             <FormLabel className='text-toxic-green'>Apocalypse scenario</FormLabel>
                             <Select
                                 onValueChange={field.onChange}
-                                defaultValue={field.value}
+                                value={field.value}
                             >
                                 <FormControl>
                                     <SelectTrigger className="no-focus min-h-12 rounded-1.5 border w-full">
@@ -167,6 +167,8 @@ const CreateCardForm = () => {
                                     <SelectItem value="phobia">phobia</SelectItem>
                                     <SelectItem value="hobby">hobby</SelectItem>
                                     <SelectItem value="luggage">luggage</SelectItem>
+                                    <SelectItem value="additional">additional</SelectItem>
+                                    <SelectItem value="bio">bio</SelectItem>
                                     <SelectItem value="special">special</SelectItem>
                                 </SelectContent>
                             </Select>
