@@ -37,6 +37,15 @@ interface CardParams {
     scenario: ScenarioParams[]
 }
 
+interface CreateScenarioParams {
+    name: string
+    description: string
+    winCondition?: string[]
+    looseCondition?: string[]
+    isPublic: boolean
+    image?: string
+}
+
 interface PaginationSearchParams {
     page?: number
     pageSize?: number

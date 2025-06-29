@@ -89,8 +89,18 @@ export const CardSchema = z.object({
     ),
 })
 
+
 export const PasswordSchema = z.object({
         password: z.string().min(6).max(20)
+})
+
+export const ScenarioSchema = z.object({
+    name: z.string().min(1, { message: "Name is required." }).max(50, { message: "50 character is maximum." }),
+    description: z.string().min(1, { message: 'Card description is required'}).max(250, { message: "Description must contain maximum 250 characters or less" }),
+    winCondition: z.array(z.string()).min(4, 'Minimum 4 tag for win').optional(),
+    looseCondition: z.array(z.string()).min(4, 'Minimum 4 tag for loose').optional(),
+    isPublic: z.boolean().optional(),
+    image: z.string().url({ message: "Please provide a valid URL." }).optional(),
 })
 
 export const PaginationSearchParamsSchema = z.object({
