@@ -78,7 +78,7 @@ export const CardSchema = z.object({
     name: z.string().min(1, { message: "Card name is required." }).max(50, { message: "50 character is maximum." }),
     type: z.enum(["profession", "health", "phobia", "hobby", "luggage", "special", "bio", "additional"]),
     description: z.string().min(1, { message: 'Card description is required'}).max(250, { message: "Description must contain maximum 250 characters or less" }),
-    level: z.number().min(1, { message: 'Minimum level is 1'}).max(5, { message: "Minimum level is 5" }),
+    level: z.number().min(1, { message: 'Minimum level is 1'}).max(5, { message: "Maximum level is 5" }),
     scenario: z.array(z.object({
         value: z.string(),
         checked: z.boolean(),
@@ -89,6 +89,10 @@ export const CardSchema = z.object({
     ),
 })
 
+export const TagSchema = z.object({
+    name: z.array(z.string().min(1, { message: "Tag name is required." }).max(15, { message: "15 character is maximum." })),
+})
+
 
 export const PasswordSchema = z.object({
         password: z.string().min(6).max(20)
@@ -97,8 +101,12 @@ export const PasswordSchema = z.object({
 export const ScenarioSchema = z.object({
     name: z.string().min(1, { message: "Name is required." }).max(50, { message: "50 character is maximum." }),
     description: z.string().min(1, { message: 'Card description is required'}).max(250, { message: "Description must contain maximum 250 characters or less" }),
-    winCondition: z.array(z.string()).min(4, 'Minimum 4 tag for win').optional(),
-    looseCondition: z.array(z.string()).min(4, 'Minimum 4 tag for loose').optional(),
+    winCondition: z.array(z.string())
+        .optional()
+        .refine((tags) => tags === undefined || tags!.length >= 2, { message: 'Minimum 3 tag for win' }),
+    looseCondition: z.array(z.string())
+        .optional()
+        .refine((tags) => tags === undefined || tags!.length >= 2, { message: 'Minimum 3 tag for loose' }),
     isPublic: z.boolean().optional(),
     image: z.string().url({ message: "Please provide a valid URL." }).optional(),
 })

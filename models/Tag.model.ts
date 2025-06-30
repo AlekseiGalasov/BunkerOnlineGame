@@ -2,12 +2,14 @@ import {Document, model, models, Schema} from "mongoose"
 
 export interface ITag {
     name: string;
+    scenarios: number
 }
 
 export interface ITagDoc extends ITag, Document {}
 
 const tagSchema = new Schema<ITag>({
         name: { type: String, required: true, unique: true},
+        scenarios: { type: Number, default: 0},
     },
     {
         timestamps: true

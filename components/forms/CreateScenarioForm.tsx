@@ -24,52 +24,32 @@ import {
 import {Badge} from "@/components/ui/badge";
 import Image from "next/image";
 
-const CreateScenarioForm = () => {
+type Tag = {
+    _id: string,
+    name: string
+}
 
-    const tags = [
-        {
-            value: 'women',
-            type: 'win'
-        },
-        {
-            value: 'technology',
-            type: 'win'
+interface ScenarioFormProps {
+    tags: Tag[]
+}
 
-        },
-        {
-            value: 'food',
-            type: 'win'
-        },
-        {
-            value: 'man',
-            type: 'loose'
-        },
-    ];
+const CreateScenarioForm = ({tags}: ScenarioFormProps) => {
 
-    const defaultWinTags = tags
-        .filter(tag => tag.type === 'win')
-        .map(tag => ({...tag, checked: false}));
-
-
-    const defaultLooseTags = tags
-        .filter(tag => tag.type === 'loose')
-        .map(tag => ({...tag, checked: false}));
+    const defaultTags = tags.map((tag: Tag) => ({...tag, checked: false}));
 
     const form = useForm<z.infer<typeof ScenarioSchema>>({
         resolver: zodResolver(ScenarioSchema),
         defaultValues: {
             name: '',
             description: '',
-            winCondition: [],
-            looseCondition: [],
+            winCondition: undefined,
+            looseCondition: undefined,
             isPublic: true,
             image: ''
         },
     })
 
     const handleSubmit = async (data: CreateScenarioParams) => {
-
-        console.log(data)
 
         toast(`Success`, {
             description: JSON.stringify(data),
@@ -155,28 +135,28 @@ const CreateScenarioForm = () => {
                                     <DropdownMenuContent className="w-full">
                                         <DropdownMenuLabel>Defeat Tags</DropdownMenuLabel>
                                         <DropdownMenuSeparator/>
-                                        {defaultWinTags.map((tag, index) => (
+                                        {defaultTags.map((tag, index) => (
                                             <DropdownMenuCheckboxItem
                                                 key={index}
-                                                checked={[...field.value].includes(tag.value)}
-                                                defaultValue={tag.value}
+                                                checked={field.value ? [...field.value].includes(tag.name) : false}
+                                                defaultValue={tag.name}
                                                 onCheckedChange={() => {
-                                                    const selectedTags = [...field.value];
-                                                    selectedTags.push(tag.value)
+                                                    const selectedTags = field.value ? [...field.value] : [];
+                                                    selectedTags.push(tag.name)
                                                     form.setValue('winCondition', selectedTags, {
                                                         shouldValidate: true, // Optional: Trigger validation
                                                         shouldDirty: true, // Optional: Mark the field as "dirty"
                                                     });
                                                 }}
                                             >
-                                                {tag.value}
+                                                {tag.name}
                                             </DropdownMenuCheckboxItem>)
                                         )}
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </FormControl>
                             <div className='flex flex-wrap gap-2 justify-start w-full'>
-                                {field.value
+                                {field.value ? field.value
                                     .map((elem, index) => (
                                         <Badge variant='secondary' className="gap-2 text-[14px]" key={index}>
                                             {elem}
@@ -188,14 +168,14 @@ const CreateScenarioForm = () => {
                                                 className='cursor-pointer object-contain invert-0 dark:invert'
                                                 onClick={() => {
                                                     const updatedValues = field.value.filter((_, i) => i !== index);
-                                                    form.setValue('winCondition', updatedValues, {
+                                                    form.setValue('winCondition', updatedValues.length ? updatedValues : undefined, {
                                                         shouldValidate: true, // Optional: Trigger validation
                                                         shouldDirty: true, // Optional: Mark the field as "dirty"
                                                     });
                                                 }}
                                             />
                                         </Badge>
-                                    ))}
+                                    )) : null}
                             </div>
                             <FormMessage/>
                         </FormItem>
@@ -219,28 +199,28 @@ const CreateScenarioForm = () => {
                                     <DropdownMenuContent className="w-full">
                                         <DropdownMenuLabel>Defeat Tags</DropdownMenuLabel>
                                         <DropdownMenuSeparator/>
-                                        {defaultLooseTags.map((tag, index) => (
+                                        {defaultTags.map((tag, index) => (
                                             <DropdownMenuCheckboxItem
                                                 key={index}
-                                                checked={[...field.value].includes(tag.value)}
-                                                defaultValue={tag.value}
+                                                checked={field.value ? [...field.value].includes(tag.name) : false}
+                                                defaultValue={tag.name}
                                                 onCheckedChange={() => {
-                                                    const selectedTags = [...field.value];
-                                                    selectedTags.push(tag.value)
+                                                    const selectedTags =  field.value ? [...field.value] : [];
+                                                    selectedTags.push(tag.name)
                                                     form.setValue('looseCondition', selectedTags, {
                                                         shouldValidate: true, // Optional: Trigger validation
                                                         shouldDirty: true, // Optional: Mark the field as "dirty"
                                                     });
                                                 }}
                                             >
-                                                {tag.value}
+                                                {tag.name}
                                             </DropdownMenuCheckboxItem>)
                                         )}
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </FormControl>
                             <div className='flex flex-wrap gap-2 justify-start w-full'>
-                                {field.value
+                                {field.value ? field.value
                                     .map((elem, index) => (
                                         <Badge variant='secondary' className="gap-2 text-[14px]" key={index}>
                                             {elem}
@@ -252,14 +232,14 @@ const CreateScenarioForm = () => {
                                                 className='cursor-pointer object-contain invert-0 dark:invert'
                                                 onClick={() => {
                                                     const updatedValues = field.value.filter((_, i) => i !== index);
-                                                    form.setValue('looseCondition', updatedValues, {
+                                                    form.setValue('looseCondition', updatedValues.length ? updatedValues : undefined, {
                                                         shouldValidate: true, // Optional: Trigger validation
                                                         shouldDirty: true, // Optional: Mark the field as "dirty"
                                                     });
                                                 }}
                                             />
                                         </Badge>
-                                    ))}
+                                    )) : null}
                             </div>
                             <FormMessage/>
                         </FormItem>

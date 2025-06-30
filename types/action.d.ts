@@ -37,6 +37,10 @@ interface CardParams {
     scenario: ScenarioParams[]
 }
 
+interface TagParams {
+    name: string[]
+}
+
 interface CreateScenarioParams {
     name: string
     description: string

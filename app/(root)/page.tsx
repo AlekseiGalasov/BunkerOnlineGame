@@ -24,6 +24,10 @@ const HomePage = () => {
                         className='cursor-pointer p-6 '>Create scenario</Button>
                 <Button onClick={() => handleNavigation(ROUTES.SCENARIOS)}
                         className='cursor-pointer p-6 '>Scenarios</Button>
+                <Button onClick={() => handleNavigation(ROUTES.CREATE_TAG)}
+                        className='cursor-pointer p-6 '>Create tag</Button>
+                <Button onClick={() => handleNavigation(ROUTES.TAGS)}
+                        className='cursor-pointer p-6 '>Tags</Button>
             </div>
         </section>
     );

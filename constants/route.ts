@@ -9,5 +9,7 @@ export const ROUTES = {
     CREATE_CARD: '/cards/create',
     SCENARIOS: '/scenarios',
     CREATE_SCENARIO: '/scenarios/create',
-    SCENARIO: (id: string) => `/scenarios/${id}`
+    SCENARIO: (id: string) => `/scenarios/${id}`,
+    TAGS: '/tags',
+    CREATE_TAG: '/tags/create',
 }
