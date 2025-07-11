@@ -6,8 +6,8 @@ import {PaginationSearchParamsSchema, TagSchema} from "@/lib/validations/validat
 import handleError from "@/handlers/error";
 import Tags, {ITag} from "@/models/Tag.model";
 import mongoose from 'mongoose';
-import Card, {ICard} from "@/models/Card.model";
 import {NotFoundError} from "@/lib/http-errors";
+import Scenario, {IScenario} from "@/models/Scenario.model";
 
 export async function createTags(params: TagParams): Promise<ActionResponse> {
 
@@ -49,6 +49,42 @@ export async function createTags(params: TagParams): Promise<ActionResponse> {
 
 }
 
+export async function getAllTagsForSelect(params: PaginationSearchParams): Promise<ActionResponse<{tags: ITag[], isNext: boolean, totalPages: number}>> {
+
+    const validationResult = await action({
+        params,
+        schema: PaginationSearchParamsSchema,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse
+    }
+
+    const { pageSize = 10, page = 1 } = validationResult.params as PaginationSearchParams
+    const skip = (Number(page) - 1) * pageSize
+    const limit = Number(pageSize)
+
+    try {
+
+        const totalTags = await Tags.countDocuments()
+        const totalPages = Math.ceil(totalTags / limit)
+        const tags = await Tags.find()
+            .select('name')
+            .skip(skip)
+            .limit(limit)
+
+        if (!tags) {
+            throw new NotFoundError('Tags not found')
+        }
+
+        const isNext = totalTags > skip + tags.length
+        return { success: true, data: {tags: JSON.parse(JSON.stringify(tags)), isNext, totalPages }}
+
+    } catch (error) {
+        return handleError(error, 'server') as ErrorResponse
+    }
+}
+
 export async function getAllTags(params: PaginationSearchParams): Promise<ActionResponse<{tags: ITag[], isNext: boolean, totalPages: number}>> {
 
     const validationResult = await action({
@@ -74,7 +110,7 @@ export async function getAllTags(params: PaginationSearchParams): Promise<Action
             .limit(limit)
 
         if (!cards) {
-            throw new NotFoundError('Cards not found')
+            throw new NotFoundError('Tags not found')
         }
 
         const isNext = totalTags > skip + cards.length

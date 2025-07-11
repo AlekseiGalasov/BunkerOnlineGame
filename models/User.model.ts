@@ -1,4 +1,4 @@
-import {model,models, Schema} from "mongoose";
+import {model, models, Schema, HydratedDocument} from "mongoose";
 
 export interface IUser {
     username: string
@@ -8,7 +8,7 @@ export interface IUser {
     totalWins?: number
 }
 
-export interface IUserDoc extends IUser, Document {}
+export type IUserDoc = HydratedDocument<IUser>
 
 const UserSchema = new Schema({
     username: { type: String, required: true, unique: true},

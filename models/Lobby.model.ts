@@ -1,18 +1,30 @@
-import {model, models, Schema } from "mongoose";
+import {HydratedDocument, model, models, Schema, Types} from "mongoose";
 import mongooseLeanVirtuals from "mongoose-lean-virtuals";
+import {IUserDoc} from "@/models/User.model";
 
 export interface ILobby {
     name: string
     password?: string
     scenario: string
     maxPlayer: number
-    players: string[]
     creator: string
     isVisible: boolean
     status: 'closed' | 'active' | 'waiting'
+    gameId?: Types.ObjectId
 }
 
-export interface ILobbyDoc extends ILobby, Document {}
+export interface ILobbyWithIds extends ILobby {
+    players: Types.ObjectId[];
+}
+
+export interface ILobbyWithUsers extends ILobby {
+    players: IUserDoc[];
+}
+
+export type ILobbyDocWithUsers = HydratedDocument<ILobbyWithUsers>
+export type ILobbyDocWithIds = HydratedDocument<ILobbyWithIds>
+
+export type ILobbyDoc = HydratedDocument<ILobby>
 
 const LobbySchema = new Schema({
     name: { type: String, required: true, unique: true },
@@ -26,7 +38,8 @@ const LobbySchema = new Schema({
     }],
     creator: { type: Schema.Types.ObjectId, ref: 'User'},
     isVisible: { type: Boolean, required: true},
-    status: { type: String, enum: ['closed', 'active', 'waiting'], required: true }
+    status: { type: String, enum: ['closed', 'active', 'waiting'], required: true },
+    gameId: {type: Types.ObjectId, ref: 'Game'}
 }, {
     timestamps: true,
 })

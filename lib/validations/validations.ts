@@ -79,14 +79,24 @@ export const CardSchema = z.object({
     type: z.enum(["profession", "health", "phobia", "hobby", "luggage", "special", "bio", "additional"]),
     description: z.string().min(1, { message: 'Card description is required'}).max(250, { message: "Description must contain maximum 250 characters or less" }),
     level: z.number().min(1, { message: 'Minimum level is 1'}).max(5, { message: "Maximum level is 5" }),
+    tags: z.array(z.object({
+        name: z.string(),
+        _id: z.string()
+    }))
+        .optional()
+        .refine((tags) => tags === undefined || tags!.length <= 5, { message: 'Maximum 5 tag per one card' }),
     scenario: z.array(z.object({
-        value: z.string(),
+        name: z.string(),
         checked: z.boolean(),
-        label: z.string()
+        _id: z.string()
     })).refine(
         (scenarios) => scenarios.some((item) => item.checked),
         { message: 'At least one scenario must be selected' }
     ),
+})
+
+export const UpdateCardSchema = CardSchema.extend({
+    id: z.string().min(1, { message: "Card ID is required." }),
 })
 
 export const TagSchema = z.object({
@@ -100,13 +110,19 @@ export const PasswordSchema = z.object({
 
 export const ScenarioSchema = z.object({
     name: z.string().min(1, { message: "Name is required." }).max(50, { message: "50 character is maximum." }),
-    description: z.string().min(1, { message: 'Card description is required'}).max(250, { message: "Description must contain maximum 250 characters or less" }),
-    winCondition: z.array(z.string())
+    description: z.string().min(1, { message: 'Card description is required'}).max(2000, { message: "Description must contain maximum 2000 characters or less" }),
+    winCondition: z.array(z.object({
+        name: z.string(),
+        _id: z.string()
+    }))
         .optional()
-        .refine((tags) => tags === undefined || tags!.length >= 2, { message: 'Minimum 3 tag for win' }),
-    looseCondition: z.array(z.string())
+        .refine((tags) => tags === undefined || tags!.length >= 2, { message: 'Minimum 2 tag for win' }),
+    looseCondition: z.array(z.object({
+        name: z.string(),
+        _id: z.string()
+    }))
         .optional()
-        .refine((tags) => tags === undefined || tags!.length >= 2, { message: 'Minimum 3 tag for loose' }),
+        .refine((tags) => tags === undefined || tags!.length >= 2, { message: 'Minimum 2 tag for loose' }),
     isPublic: z.boolean().optional(),
     image: z.string().url({ message: "Please provide a valid URL." }).optional(),
 })

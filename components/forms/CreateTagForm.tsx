@@ -9,7 +9,6 @@ import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, Form
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {toast} from "sonner";
-import {createCard} from "@/lib/actions/card.action";
 import {Badge} from "@/components/ui/badge";
 import Image from "next/image";
 import {createTags} from "@/lib/actions/tag.action";
@@ -93,7 +92,7 @@ const CreateTagForm = () => {
                                     />
                                     {
                                         field?.value?.length > 0 && (
-                                            <div className='flex-start mt-2.5 flex-wrap gap-2.5'>
+                                            <div className='flex flex-start mt-2.5 flex-wrap gap-2.5'>
                                                 {field?.value?.map((tag: string, index: number) =>
                                                     <Badge
                                                         variant='secondary'

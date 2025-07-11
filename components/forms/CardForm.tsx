@@ -20,54 +20,45 @@ import {
 import {DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Badge} from "@/components/ui/badge";
 import {toast} from "sonner";
-import {createCard} from "@/lib/actions/card.action";
+import {createCard, editCard} from "@/lib/actions/card.action";
+import Image from "next/image";
 
-const CreateCardForm = () => {
+interface CardFormParams {
+    defaultValues: CardParams
+    formType: 'Create' | 'Edit'
+    id?: string
+    tags: TagParams[]
+}
 
-    const scenarios = [
-        {
-            label: 'Atomic winter',
-            value: 'atomic_winter'
-        },
-        {
-            label: 'Zombie virus',
-            value: 'zombie_virus'
-        },
-        {
-            label: 'Ai Rise',
-            value: 'ai_rise'
-        },
-    ];
 
-    const defaultScenario = scenarios.map(elem => {
-        return {...elem, checked: false}
-    })
+const CardForm = ({formType, defaultValues, id, tags}: CardFormParams) => {
 
     const form = useForm<z.infer<typeof CardSchema>>({
         resolver: zodResolver(CardSchema),
-        defaultValues: {
-            name: '',
-            description: '',
-            level: 1,
-            type: 'profession',
-            scenario: defaultScenario
-        },
+        defaultValues
     })
 
     const handleSubmit = async (data: CardParams) => {
 
         data.scenario = data.scenario.filter((elem: ScenarioParams) => elem.checked)
 
-        const result = await createCard(data)
+        let result
+        if (formType === 'Edit') {
+            result = await editCard({...data, id} as UpdateCardParams)
+        }
+
+        if (formType === 'Create') {
+            result = await createCard(data)
+        }
 
         if (result?.success) {
             toast(`Success`, {
-                description: `Card ${result.data.name} created successfully`,
+                description: `Card ${result?.data?.name}  ${formType === 'Edit' ? 'edited' : 'created'} successfully`,
             })
             form.reset()
         } else {
-            toast(`Error ${result.status}`,{
-                description: `Error ${result.error?.message}`,
+            toast(`Error ${result?.status}`,{
+                description: `Error ${result?.error?.message}`,
             })
         }
     }
@@ -177,6 +168,71 @@ const CreateCardForm = () => {
                 />
                 <FormField
                     control={form.control}
+                    name={'tags'}
+                    render={({field}) => (
+                        <FormItem className=''>
+                            <FormLabel className='text-toxic-green'>Tags</FormLabel>
+                            <FormControl>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            className='cursor-pointer no-focus min-h-12 rounded-1.5 border w-full text-left'
+                                            variant="outline">
+                                            Select the tags that define the card
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-full">
+                                        <DropdownMenuLabel>Tags</DropdownMenuLabel>
+                                        <DropdownMenuSeparator/>
+                                        {tags.map((tag, index) => (
+                                            <DropdownMenuCheckboxItem
+                                                key={index}
+                                                checked={field.value ? field.value.some(elem => elem._id === tag._id) : false}
+                                                defaultValue={tag._id}
+                                                onCheckedChange={() => {
+                                                    const selectedTags = field.value ? [...field.value] : [];
+                                                    selectedTags.push(tag)
+                                                    form.setValue('tags', selectedTags, {
+                                                        shouldValidate: true,
+                                                        shouldDirty: true,
+                                                    });
+                                                }}
+                                            >
+                                                {tag.name}
+                                            </DropdownMenuCheckboxItem>)
+                                        )}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </FormControl>
+                            <div className='flex flex-wrap gap-2 justify-start w-full'>
+                                {field.value ? Object.values(field.value)
+                                    .map((elem, index) => (
+                                        <Badge variant='secondary' className="gap-2 text-[14px]" key={index}>
+                                            {elem.name}
+                                            <Image
+                                                src={'/icons/close.svg'}
+                                                alt={'close icon'}
+                                                width={12}
+                                                height={12}
+                                                className='cursor-pointer object-contain invert-0 dark:invert'
+                                                onClick={() => {
+                                                    const updatedValues = field.value.filter((_, i) => i !== index);
+                                                    console.log(form.getValues('tags'), field.value)
+                                                    form.setValue('tags', updatedValues.length ? updatedValues : [], {
+                                                        shouldValidate: true,
+                                                        shouldDirty: true,
+                                                    });
+                                                }}
+                                            />
+                                        </Badge>
+                                    )) : null}
+                            </div>
+                            <FormMessage/>
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
                     name={'scenario'}
                     render={({field}) => (
                         <FormItem className=''>
@@ -191,8 +247,8 @@ const CreateCardForm = () => {
                                                     {field.value
                                                         .filter((elem) => elem.checked)
                                                         .map((elem) => (
-                                                            <Badge variant='default' className="gap-4" key={elem.label}>
-                                                                {elem.label}
+                                                            <Badge variant='default' className="gap-4" key={elem._id}>
+                                                                {elem.name}
                                                             </Badge>
                                                         ))}
                                                 </div>
@@ -204,9 +260,9 @@ const CreateCardForm = () => {
                                         <DropdownMenuSeparator/>
                                         {field.value.map((scenario, index) => (
                                             <DropdownMenuCheckboxItem
-                                                key={scenario.label}
+                                                key={scenario._id}
                                                 checked={scenario.checked}
-                                                defaultValue={scenario.value}
+                                                defaultValue={scenario.name}
                                                 onCheckedChange={(isChecked) => {
                                                     // Update the state immutably
                                                     const updatedScenarios = field.value.map((scn, idx) =>
@@ -223,7 +279,7 @@ const CreateCardForm = () => {
                                                 }}
 
                                             >
-                                                {scenario.label}
+                                                {scenario.name}
                                             </DropdownMenuCheckboxItem>)
                                         )}
                                     </DropdownMenuContent>
@@ -243,11 +299,11 @@ const CreateCardForm = () => {
                     disabled={form.formState.isSubmitting}
                     className="cursor-pointer min-h-12 w-full rounded-2 px-4 py-3 bg-radiation-yellow"
                 >
-                    Create card
+                    {formType} card
                 </Button>
             </form>
         </Form>
     );
 };
 
-export default CreateCardForm;
+export default CardForm;

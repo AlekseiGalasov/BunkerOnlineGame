@@ -31,21 +31,28 @@ interface ScenarioParams {
 
 interface CardParams {
     name: string
-    type: "profession" | "health" | "phobia" | "hobby" | "luggage" | "special"
+    type: "profession" | "health" | "phobia" | "hobby" | "luggage" | "special" | "bio" | "additional"
     description: string
     level: number
     scenario: ScenarioParams[]
+    tags?: TagParams[]
+    image?: string
+}
+
+interface UpdateCardParams extends CardParams {
+    id: string
 }
 
 interface TagParams {
-    name: string[]
+    _id: string
+    name: boolean
 }
 
 interface CreateScenarioParams {
     name: string
     description: string
-    winCondition?: string[]
-    looseCondition?: string[]
+    winCondition?: TagParams[]
+    looseCondition?: TagParams[]
     isPublic: boolean
     image?: string
 }
@@ -61,6 +68,14 @@ interface PaginationSearchParams {
 
 
 interface LobbyIdParams {
+    id: string
+}
+
+interface getCardByIdParams {
+    id: string
+}
+
+interface getScenarioIdParams {
     id: string
 }
 

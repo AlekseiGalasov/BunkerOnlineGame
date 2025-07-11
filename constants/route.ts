@@ -7,6 +7,7 @@ export const ROUTES = {
     LOBBY: (id: string) => `/lobby/${id}`,
     CARDS: '/cards',
     CREATE_CARD: '/cards/create',
+    EDIT_CARD: (id: string) => `/cards/edit/${id}`,
     SCENARIOS: '/scenarios',
     CREATE_SCENARIO: '/scenarios/create',
     SCENARIO: (id: string) => `/scenarios/${id}`,

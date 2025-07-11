@@ -1,21 +1,21 @@
+'use client'
+
 import React from 'react';
-import {SubmitHandler, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {toast} from "sonner";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {joinToLobby} from "@/lib/actions/lobby.action";
 import {PasswordSchema} from "@/lib/validations/validations";
-import {ActionResponse} from "@/types/global";
-import CreateLobbyForm from "@/components/forms/CreateLobbyForm";
+import {joinToLobby} from "@/lib/actions/lobby.action";
+import {toast} from "sonner";
 
 interface LobbyPasswordFormProps {
-    commitPassword: (password: string) => void
+    lobbyId: string
 }
 
-const LobbyPasswordForm = ({commitPassword}: LobbyPasswordFormProps) => {
+const LobbyPasswordForm = ({lobbyId}: LobbyPasswordFormProps) => {
 
     const form = useForm<z.infer<typeof PasswordSchema>>({
         resolver: zodResolver(PasswordSchema),
@@ -24,8 +24,18 @@ const LobbyPasswordForm = ({commitPassword}: LobbyPasswordFormProps) => {
         },
     })
 
-    const handleSubmit = async (data: { password: string; }) => {
-        commitPassword(data.password);
+    const handleSubmit = async ({password}: { password: string; }) => {
+        const result = await joinToLobby({id: lobbyId, password})
+
+        if (result?.success) {
+            toast(`Success`, {
+                description: `Success`,
+            })
+        } else {
+            toast(`Error ${result.status}`, {
+                description: `Error ${result.error?.message}`,
+            })
+        }
     }
 
     return (

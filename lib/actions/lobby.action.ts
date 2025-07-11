@@ -4,14 +4,14 @@ import {ActionResponse, ErrorResponse, Lobby as LobbyInterface} from "@/types/gl
 import action from "@/handlers/action";
 import {LobbySchema, PaginationSearchParamsSchema} from "@/lib/validations/validations";
 import handleError from "@/handlers/error";
-import Lobby, {ILobby, ILobbyDoc} from "@/models/Lobby.model";
+import Lobby, {ILobbyDocWithIds} from "@/models/Lobby.model";
 import {revalidatePath} from "next/cache";
 import {ROUTES} from "@/constants/route";
 import {CustomError, ForbiddenError, NotFoundError} from "@/lib/http-errors";
 import bcrypt from "bcryptjs";
-import { FilterQuery } from "mongoose";
+import Game from "@/models/Game.model";
 
-export async function createLobby(params: LobbyParams): Promise<ActionResponse<ILobbyDoc>> {
+export async function createLobby(params: LobbyParams): Promise<ActionResponse<ILobbyDocWithIds>> {
 
     const validationResult = await action({
         params,
@@ -27,7 +27,7 @@ export async function createLobby(params: LobbyParams): Promise<ActionResponse<I
     const userId = validationResult.session?.user?.id
 
     try {
-        const existingLobby = await Lobby.findOne({name: name, status: {$in: ['active', 'waiting']}});
+        const existingLobby = await Lobby.findOne({name: name, status: {$in: ['active', 'waiting', 'closed']}});
 
         if (existingLobby) {
             throw new Error(`Lobby with ${name} already exists`);
@@ -140,6 +140,8 @@ export async function joinToLobby(params: JoinToLobbyParams): Promise<ActionResp
             if (!isValidPassword) {
                 throw new ForbiddenError('Wrong password', 'invalid_password');
             }
+
+            revalidatePath(ROUTES.LOBBY(id));
         }
 
         existingLobby.players.push(userId)

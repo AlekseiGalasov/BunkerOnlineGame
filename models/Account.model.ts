@@ -1,4 +1,4 @@
-import {model, models, Schema, Types} from "mongoose";
+import {HydratedDocument, model, models, Schema, Types} from "mongoose";
 
 export interface IAccount {
     userId: Types.ObjectId;
@@ -9,7 +9,7 @@ export interface IAccount {
     providerAccountId: string;
 }
 
-export interface IAccountDoc extends IAccount, Document {}
+export type IAccountDoc = HydratedDocument<IAccount>
 
 const AccountSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true},

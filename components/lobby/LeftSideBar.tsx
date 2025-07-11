@@ -1,4 +1,6 @@
-import React, {useEffect, useRef} from 'react';
+'use client'
+
+import React, {useRef} from 'react';
 import Image from "next/image";
 import gsap from 'gsap';
 import {useGSAP} from "@gsap/react";
@@ -8,7 +10,7 @@ interface LeftSideBarProps {
     onClose: () => void; // Callback for closing the sidebar
 }
 
-const LeftSideBar = ({onClose, isOpen}: LeftSideBarProps) => {
+const LeftSideBar = ({onClose, isOpen }: LeftSideBarProps) => {
 
     const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +37,7 @@ const LeftSideBar = ({onClose, isOpen}: LeftSideBarProps) => {
             className='left-side-bar opacity-80 flex w-[420px] fixed left-0 top-0 pt-28 px-2 h-screen bg-primary-foreground flex-col gap-10 border-r-2'
         >
             <div className='flex justify-between items-center w-full px-4 py-4'>
-                <h3 className='items-center'>Character Info:</h3>
+                <h3 className='items-center'>Character Info: </h3>
                 <Image
                     src={'/icons/close.svg'}
                     alt={'close'}
@@ -46,7 +48,7 @@ const LeftSideBar = ({onClose, isOpen}: LeftSideBarProps) => {
                 />
             </div>
             <div>
-                body
+
             </div>
         </section>
     );

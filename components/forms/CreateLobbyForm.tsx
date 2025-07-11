@@ -16,7 +16,7 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {createLobby} from "@/lib/actions/lobby.action";
 import {ROUTES} from "@/constants/route";
 
-const CreateLobbyForm = () => {
+const CreateLobbyForm = ({scenarios}: {scenarios: {_id: string, name: string}[]}) => {
 
     const router = useRouter()
     const form = useForm<z.infer<typeof LobbySchema>>({
@@ -24,14 +24,19 @@ const CreateLobbyForm = () => {
         defaultValues: {
             name: '',
             password: '',
-            scenario: 'atomic_winter',
+            scenario: '',
             maxPlayer: 6,
             isVisible: true
         },
     })
 
     const handleSubmit = async (data: LobbyParams) => {
+
+        console.log(data)
+
         const result = await createLobby(data)
+
+
         if (result?.success) {
             toast(`Success`, {
                 description: JSON.stringify(data),
@@ -132,9 +137,11 @@ const CreateLobbyForm = () => {
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    <SelectItem value="atomic_winter">☢️ Atomic winter</SelectItem>
-                                    <SelectItem value="zombie">🧟 Zombie virus</SelectItem>
-                                    <SelectItem value="rise_ai">🤖 Rise of the AI</SelectItem>
+                                    {
+                                        Object.values(scenarios).map(scenario => (
+                                            <SelectItem key={scenario._id} value={scenario._id}>{scenario.name}</SelectItem>
+                                        ))
+                                    }
                                 </SelectContent>
                             </Select>
                             <FormDescription>

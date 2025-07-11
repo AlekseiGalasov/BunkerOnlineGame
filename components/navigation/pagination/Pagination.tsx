@@ -53,10 +53,10 @@ const PaginationComponent = ({totalPages}: PaginationComponentProps) => {
                 </PaginationItem>
                 {
                     totalPages > 1 && new Array(totalPages).fill(0).map((item, index) => (
-                        <PaginationItem>
+                        <PaginationItem key={index}>
                             <Button variant='ghost'
                                     className={cn(currentPage == index + 1 && 'bg-secondary', 'cursor-pointer')}
-                                    onClick={() => changePageHandler(index + 1)} key={index}>{index + 1}</Button>
+                                    onClick={() => changePageHandler(index + 1)}>{index + 1}</Button>
                         </PaginationItem>
                     ))
                 }

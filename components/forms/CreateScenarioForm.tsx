@@ -5,17 +5,15 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {ScenarioSchema} from "@/lib/validations/validations";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {createCard} from "@/lib/actions/card.action";
 import {toast} from "sonner";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import Link from "next/link";
 import {
-    DropdownMenu, DropdownMenuCheckboxItem,
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuLabel,
     DropdownMenuSeparator,
@@ -23,19 +21,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {Badge} from "@/components/ui/badge";
 import Image from "next/image";
+import {createScenario} from "@/lib/actions/scenario.action";
 
-type Tag = {
-    _id: string,
-    name: string
-}
 
 interface ScenarioFormProps {
-    tags: Tag[]
+    tags: TagParams[]
 }
 
 const CreateScenarioForm = ({tags}: ScenarioFormProps) => {
-
-    const defaultTags = tags.map((tag: Tag) => ({...tag, checked: false}));
 
     const form = useForm<z.infer<typeof ScenarioSchema>>({
         resolver: zodResolver(ScenarioSchema),
@@ -51,20 +44,18 @@ const CreateScenarioForm = ({tags}: ScenarioFormProps) => {
 
     const handleSubmit = async (data: CreateScenarioParams) => {
 
-        toast(`Success`, {
-            description: JSON.stringify(data),
-        })
+        const result = await createScenario(data)
 
-        // if (result?.success) {
-        //     toast(`Success`, {
-        //         description: `Card ${result.data.name} created successfully`,
-        //     })
-        //     form.reset()
-        // } else {
-        //     toast(`Error ${result.status}`, {
-        //         description: `Error ${result.error?.message}`,
-        //     })
-        // }
+        if (result?.success) {
+            toast(`Success`, {
+                description: `Scenario ${result?.data.name} created successfully`,
+            })
+            form.reset()
+        } else {
+            toast(`Error ${result.status}`, {
+                description: `Error ${result.error?.message}`,
+            })
+        }
     }
 
     return (
@@ -133,16 +124,16 @@ const CreateScenarioForm = ({tags}: ScenarioFormProps) => {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-full">
-                                        <DropdownMenuLabel>Defeat Tags</DropdownMenuLabel>
+                                        <DropdownMenuLabel>Tags</DropdownMenuLabel>
                                         <DropdownMenuSeparator/>
-                                        {defaultTags.map((tag, index) => (
+                                        {tags.map((tag, index) => (
                                             <DropdownMenuCheckboxItem
                                                 key={index}
-                                                checked={field.value ? [...field.value].includes(tag.name) : false}
-                                                defaultValue={tag.name}
+                                                checked={field.value ? field.value.some(elem => elem._id === tag._id) : false}
+                                                defaultValue={tag._id}
                                                 onCheckedChange={() => {
                                                     const selectedTags = field.value ? [...field.value] : [];
-                                                    selectedTags.push(tag.name)
+                                                    selectedTags.push(tag)
                                                     form.setValue('winCondition', selectedTags, {
                                                         shouldValidate: true, // Optional: Trigger validation
                                                         shouldDirty: true, // Optional: Mark the field as "dirty"
@@ -156,10 +147,10 @@ const CreateScenarioForm = ({tags}: ScenarioFormProps) => {
                                 </DropdownMenu>
                             </FormControl>
                             <div className='flex flex-wrap gap-2 justify-start w-full'>
-                                {field.value ? field.value
+                                {field.value ? Object.values(field.value)
                                     .map((elem, index) => (
                                         <Badge variant='secondary' className="gap-2 text-[14px]" key={index}>
-                                            {elem}
+                                            {elem.name}
                                             <Image
                                                 src={'/icons/close.svg'}
                                                 alt={'close icon'}
@@ -197,16 +188,16 @@ const CreateScenarioForm = ({tags}: ScenarioFormProps) => {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-full">
-                                        <DropdownMenuLabel>Defeat Tags</DropdownMenuLabel>
+                                        <DropdownMenuLabel>Tags</DropdownMenuLabel>
                                         <DropdownMenuSeparator/>
-                                        {defaultTags.map((tag, index) => (
+                                        {tags.map((tag, index) => (
                                             <DropdownMenuCheckboxItem
                                                 key={index}
-                                                checked={field.value ? [...field.value].includes(tag.name) : false}
-                                                defaultValue={tag.name}
+                                                checked={field.value ? field.value.some(elem => elem._id === tag._id) : false}
+                                                defaultValue={tag._id}
                                                 onCheckedChange={() => {
-                                                    const selectedTags =  field.value ? [...field.value] : [];
-                                                    selectedTags.push(tag.name)
+                                                    const selectedTags = field.value ? [...field.value] : [];
+                                                    selectedTags.push(tag)
                                                     form.setValue('looseCondition', selectedTags, {
                                                         shouldValidate: true, // Optional: Trigger validation
                                                         shouldDirty: true, // Optional: Mark the field as "dirty"
@@ -220,10 +211,10 @@ const CreateScenarioForm = ({tags}: ScenarioFormProps) => {
                                 </DropdownMenu>
                             </FormControl>
                             <div className='flex flex-wrap gap-2 justify-start w-full'>
-                                {field.value ? field.value
+                                {field.value ? Object.values(field.value)
                                     .map((elem, index) => (
                                         <Badge variant='secondary' className="gap-2 text-[14px]" key={index}>
-                                            {elem}
+                                            {elem.name}
                                             <Image
                                                 src={'/icons/close.svg'}
                                                 alt={'close icon'}
@@ -281,7 +272,6 @@ const CreateScenarioForm = ({tags}: ScenarioFormProps) => {
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    required
                                     type={'text'}
                                     {...field}
                                     className="no-focus min-h-12 rounded-1.5 border lg:w-2/3 xl:w-full"
